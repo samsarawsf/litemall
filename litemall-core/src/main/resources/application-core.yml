@@ -101,10 +101,6 @@ litemall:
     # 腾讯对象存储配置信息
     # 请参考 https://cloud.tencent.com/document/product/436/6249
     tencent:
-      secretId: AKID49HQXchhigbUG0Z0Z2LYq3A83sY9cyDO
-      secretKey: KkLsNymVGwY4W3Up02zr0MvyJg4Md4bF
-      region: ap-nanjing
-      bucketName: sxy-shop-1324656804
     # 七牛云对象存储配置信息
     qiniu:
       endpoint: http://pd5cb6ulu.bkt.clouddn.com
