@@ -132,14 +132,14 @@ public class WxHomeController {
         Map<String, Object> entity = new HashMap<>();
         try {
             entity.put("banner", bannerTask.get());
-            entity.put("channel", channelTask.get());
-            entity.put("couponList", couponListTask.get());
+//            entity.put("channel", channelTask.get());
+//            entity.put("couponList", couponListTask.get());
             entity.put("newGoodsList", newGoodsListTask.get());
-            entity.put("hotGoodsList", hotGoodsListTask.get());
-            entity.put("brandList", brandListTask.get());
-            entity.put("topicList", topicListTask.get());
-            entity.put("grouponList", grouponListTask.get());
-            entity.put("floorGoodsList", floorGoodsListTask.get());
+//            entity.put("hotGoodsList", hotGoodsListTask.get());
+//            entity.put("brandList", brandListTask.get());
+//            entity.put("topicList", topicListTask.get());
+//            entity.put("grouponList", grouponListTask.get());
+//            entity.put("floorGoodsList", floorGoodsListTask.get());
             //缓存数据
             HomeCacheManager.loadData(HomeCacheManager.INDEX, entity);
         }

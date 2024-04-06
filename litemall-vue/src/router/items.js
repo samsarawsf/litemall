@@ -76,5 +76,11 @@ export default [
     name: 'topicList',
     component: () => import('@/views/items/topic-list'),
     props: route => route.query
+  },
+  {
+    path: '/comments/:orderId',
+    name: 'comments',
+    component: () => import('@/views/comments'),
+    props: route => route.query
   }
 ];

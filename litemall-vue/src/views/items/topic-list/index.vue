@@ -1,141 +1,102 @@
 <template>
-  <div class="goods_topic_list">
-    <van-list v-model="loading"
-              :finished="finished"
-              :immediate-check="false"
-              finished-text="没有更多了"
-              @load="getTopicList">
-      <div class="topic-info"
-           v-for="(topic, index) in list"
-           :key="index"
-           @click="itemClick(topic.id)">
-        <div class="name">
-          <img class="img"
-               :src="topic.picUrl"
-               background-size="cover" />
-          <div class="info-box">
-            <div class="txt">{{topic.title}}</div>
-            <div class="line"></div>
-            <div class="price">阅读次数：{{topic.readCount}}</div>
-          </div>
-        </div>
-        <div class="desc">
-          {{topic.subtitle}}
-        </div>
-      </div>
-    </van-list>
+  <div class="brand_culture">
+    <!-- 介绍 -->
+    <div class="section introduction">
+      <h2>介绍</h2>
+      <p>致力于打造线上饮品购物的网站。在我们这里应用尽有。没有你买不到的，只有你想不到的。</p>
+    </div>
 
+    <!-- 文化 -->
+    <div class="section culture">
+      <h2>文化</h2>
+      <ul>
+        <li>以客户为中心，不断满足客户需求。</li>
+        <li>不断学习和进步，追求个人成长。</li>
+        <li>开放包容，欢迎多元文化和观念。</li>
+        <li>诚信经营，建立长期合作伙伴关系。</li>
+      </ul>
+    </div>
+
+    <!-- 故事 -->
+    <div class="section story">
+      <h2>故事</h2>
+      <p>
+        创始人 Jenny 回到城市后，开始研发各种以天然植物和果实为基础的茶饮。
+        他坚持使用有机原料，手工采摘，并融入传统茶艺，希望每一杯茶饮都能让消费者感受到大自然的魅力。
+        后续还研究了其他各种各样的饮品。
+      </p>
+    </div>
+
+    <!-- 历程 -->
+    <div class="section course">
+      <h2>历程</h2>
+      <p>无</p>
+    </div>
   </div>
 </template>
 
 <script>
-import { topicList } from '@/api/api';
-import { List } from 'vant';
-
 export default {
-  data() {
-    return {
-      list: [],
-      page: 0,
-      limit: 10,
-      loading: false,
-      finished: false
-    };
-  },
-
-  created() {
-    this.init();
-  },
-
-  methods: {
-    init() {
-      this.page = 0;
-      this.list = [];
-      this.getTopicList();
-    },
-    getTopicList() {
-      this.page++;
-      topicList({
-        page: this.page,
-        limit: this.limit
-      }).then(res => {
-        this.list.push(...res.data.data.list);
-        this.loading = false;
-        this.finished = res.data.data.page >= res.data.data.pages;
-      });
-    },
-    itemClick(id) {
-      this.$router.push(`/items/topic/${id}`);
-    }
-  },
-
-  components: {
-    [List.name]: List
-  }
+  name: 'BrandCulture'
 };
 </script>
 
-<style lang="scss" scoped>
-.goods_topic_list {
-  .topic-info {
-    .name {
-      width: 100%;
-      height: 180px;
-      position: relative;
+<style scoped>
+.brand_culture {
+  padding: 20px;
+}
 
-      .img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 180px;
-      }
+.section {
+  margin-bottom: 50px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 30px;
+}
 
-      .info-box {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 180px;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        display: block;
+h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+}
 
-        .txt {
-          margin-top: 60px;
-          height: 25px;
-          font-size: 25px;
-          color: #fff;
-        }
+p {
+  font-size: 20px;
+  color: #666;
+  line-height: 1.8;
+}
 
-        .line {
-          margin: 0 auto;
-          margin-top: 16px;
-          display: block;
-          height: 2px;
-          width: 300px;
-          background: #fff;
-        }
-        .price{
-          height: 25px;
-          font-size: 25px;
-          color: #fff;
-        }
-      }
-    }
-    .desc {
-      background: #fff;
-      width: 100%;
-      height: auto;
-      overflow: hidden;
-      padding: 25px 20px;
-      font-size: 20px;
-      color: #666;
-      line-height: 20px;
-      text-align: center;
-    }
-  }
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+li {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+/* 以下是一些额外的样式，使页面更具吸引力 */
+.brand_culture {
+  background-color: #f8f8f8;
+}
+
+.section {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: center;
+}
+
+.story p {
+  text-indent: 2em;
+}
+
+.course p {
+  text-align: center;
 }
 </style>

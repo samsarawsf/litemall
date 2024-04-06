@@ -13,21 +13,8 @@
       </div>
     </van-cell>
   </van-cell-group>
+  
 
-  <van-cell-group>
-    <van-cell class="order-coupon" title="优惠券" is-link :value="getCouponValue()" @click="getCoupons" />
-  </van-cell-group>
-
-<!-- 优惠券列表 -->
-<van-popup v-model="showList" position="bottom">
-  <van-coupon-list
-    :coupons="coupons"
-    :chosen-coupon="chosenCoupon"
-    :disabled-coupons="disabledCoupons"
-    @change="onChange"
-    @exchange="onExchange"
-  />
-</van-popup>
 
     <van-card
       v-for="item in checkedGoodsList"
@@ -53,8 +40,11 @@
       <van-cell title="邮费">
         <span class="red">{{ freightPrice * 100| yuan}}</span>
       </van-cell>
-      <van-cell title="优惠券">
-        <span class="red">-{{ couponPrice * 100| yuan}}</span>
+      <van-cell title="积分">
+        <span class="red">{{ order.score }}</span>
+      </van-cell>
+      <van-cell title="是否积分换购">
+        <van-switch v-model="scored" size="20" />
       </van-cell>
       <van-field v-model="message" placeholder="请输入备注" label="订单备注">
       <template slot="icon">{{message.length}}/50</template>
@@ -62,7 +52,7 @@
     </van-cell-group>
 
     <van-submit-bar
-      :price="actualPrice*100"
+      :price="scored ? actualPrice*100-order.score *100: actualPrice*100"
       label="总计："
       buttonText="提交订单"
       :disabled="isDisabled"
@@ -72,9 +62,9 @@
 </template>
 
 <script>
-import { Card, Tag, ard, Field, SubmitBar, Toast  } from 'vant';
+import { Card, Tag, ard, Field, SubmitBar, Toast,Switch  } from 'vant';
 import { CouponCell, CouponList, Popup } from 'vant';
-import { cartCheckout, orderSubmit, couponSelectList} from '@/api/api';
+import {cartCheckout, orderSubmit, couponSelectList, userIndex} from '@/api/api';
 import { getLocalStorage, setLocalStorage } from '@/utils/local-storage';
 import dayjs from 'dayjs';
 
@@ -96,7 +86,9 @@ export default {
       showList: false,
       chosenCoupon: -1,
       coupons: [],
-      disabledCoupons: [] 
+      disabledCoupons: [],
+      order:[],
+      scored:false
     };
   },
   created() {
@@ -104,6 +96,17 @@ export default {
   },
 
   methods: {
+    amount(){
+      if (this.scored ){
+        if (this.order.score <= this.actualPrice){
+          return this.actualPrice*100-this.order.score *100;
+        }else {
+          return 0;
+        }
+      }else{
+        return this.actualPrice*100;
+      }
+    },
     onSubmit() {     
       const {AddressId, CartId, CouponId, UserCouponId} = getLocalStorage('AddressId', 'CartId', 'CouponId', 'UserCouponId');
 
@@ -122,7 +125,8 @@ export default {
         userCouponId: UserCouponId,
         grouponLinkId: 0,
         grouponRulesId: 0,
-        message: this.message
+        message: this.message,
+        scored: this.scored
       }).then(res => {
         
         // 下单成功，重置下单参数。
@@ -202,7 +206,9 @@ export default {
 
           setLocalStorage({AddressId: data.addressId, CartId: data.cartId, CouponId: data.couponId, UserCouponId: data.userCouponId});
       });
-
+      userIndex().then(res => {
+        this.order = res.data.data.order;
+      });
     },
     onChange(index) {
       this.showList = false;
@@ -232,7 +238,8 @@ export default {
     [Tag.name]: Tag,
     [CouponCell.name]: CouponCell,
     [CouponList.name]: CouponList,
-    [Popup.name]: Popup
+    [Popup.name]: Popup,
+    [Switch.name]: Switch
   }
 };
 </script>

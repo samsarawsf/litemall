@@ -27,7 +27,6 @@
         @click.native="skuClick"
       />
       <van-cell title="属性" isLink @click.native="propsPopup = true"/>
-      <van-cell title="运费" value="满88免邮费"/>
     </van-cell-group>
     <van-sku
       v-model="showSku"
@@ -58,12 +57,38 @@
       <van-goods-action-button type="danger" @click="skuClick" text="立即购买"/>
     </van-goods-action>
 
+
+    <div class="comment_section">
+      <div class="item_desc_title">商品评论</div>
+      <div v-if="comments.length > 0" class="comment_list">
+        <div v-for="(comment, index) in comments" :key="index" class="comment_item">
+          <div class="comment_header">
+            <div class="user_info">
+              <img v-if="comment.userInfo.avatarUrl" :src="comment.userInfo.avatarUrl" class="avatar" alt="Avatar">
+              <span class="nickname">{{ comment.userInfo.nickName }}</span>
+            </div>
+            <div class="comment_time">{{ comment.addTime }}</div>
+          </div>
+          <div class="comment_content">
+            <p>{{ comment.content }}</p>
+            <div v-if="comment.picList.length > 0" class="comment_pictures">
+              <img v-for="(pic, picIndex) in comment.picList" :key="picIndex" :src="pic" class="comment_picture" alt="Comment Picture">
+            </div>
+          </div>
+          <!-- 将评分放在右边 -->
+          <div class="comment_score">{{ comment.starText }}</div>
+        </div>
+      </div>
+      <div v-else class="no_comments">
+        <p>暂无评论</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 
-import { goodsDetail, cartGoodsCount, collectAddOrDelete, cartAdd, cartFastAdd } from '@/api/api';
+import { goodsDetail, cartGoodsCount, collectAddOrDelete, cartAdd, cartFastAdd,commentList,commentCount } from '@/api/api';
 
 import { Sku, Swipe, SwipeItem, GoodsAction, GoodsActionButton, GoodsActionIcon, Popup } from 'vant';
 import { setLocalStorage } from '@/utils/local-storage';
@@ -105,7 +130,8 @@ export default {
         }
       },
       propsPopup: false,
-      showSku: false
+      showSku: false,
+      comments:[]
     };
   },
 
@@ -121,9 +147,25 @@ export default {
 
   created() {
     this.initData();
+    this.getComment();
   },
 
   methods: {
+    getComment() {
+      commentList({
+        type: 0,
+        valueId: this.itemId,
+        showType: 0
+      }).then(res => {
+        this.comments = res.data.data.list.map(comment => {
+          return {
+            ...comment,
+            starText: ['很差', '较差', '一般', '很好', '非常满意'][comment.star - 1]
+          };
+        });
+        console.log(this.comments)
+      });
+    },
     skuClick() {
       this.showSku = true;
     },
@@ -136,6 +178,7 @@ export default {
       cartGoodsCount().then(res => {
         this.cartInfo = res.data.data;
       });
+      
     },
     toCart() {
       this.$router.push({
@@ -406,5 +449,84 @@ export default {
   @include one-border;
   padding: 10px 0;
   text-align: center;
+}
+
+
+.comment_list {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.comment_item {
+  margin-bottom: 20px;
+}
+
+.comment_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.user_info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.nickname {
+  font-weight: bold;
+}
+
+.comment_time {
+  color: #999;
+}
+
+.comment_content p {
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.comment_pictures {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.comment_picture {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+.comment_score {
+  margin-left: 20px;
+}
+.comment_section {
+  padding: 10px;
+}
+
+.comment_list {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.comment_item {
+  margin-bottom: 20px;
+  background-color: #fff; /* 设置评论区域背景颜色 */
+  border-radius: 5px; /* 设置评论区域圆角 */
+  padding: 10px; /* 设置评论区域内边距 */
+}
+
+.comment_score {
+  margin-left: auto; /* 将评分区域推至右侧 */
 }
 </style>

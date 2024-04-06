@@ -257,6 +257,7 @@ public class WxOrderService {
         Integer couponId = JacksonUtil.parseInteger(body, "couponId");
         Integer userCouponId = JacksonUtil.parseInteger(body, "userCouponId");
         String message = JacksonUtil.parseString(body, "message");
+        Boolean scored = JacksonUtil.parseBoolean(body, "scored");
         Integer grouponRulesId = JacksonUtil.parseInteger(body, "grouponRulesId");
         Integer grouponLinkId = JacksonUtil.parseInteger(body, "grouponLinkId");
 
@@ -358,14 +359,27 @@ public class WxOrderService {
         if (checkedGoodsPrice.compareTo(SystemConfig.getFreightLimit()) < 0) {
             freightPrice = SystemConfig.getFreight();
         }
-
+        LitemallUser user = userService.findById(userId);
         // 可以使用的其他钱，例如用户积分
-        BigDecimal integralPrice = new BigDecimal(0);
 
+        BigDecimal actualPrice = null;
         // 订单费用
         BigDecimal orderTotalPrice = checkedGoodsPrice.add(freightPrice).subtract(couponPrice).max(new BigDecimal(0));
-        // 最终支付费用
-        BigDecimal actualPrice = orderTotalPrice.subtract(integralPrice);
+        if (scored) {
+            // 最终支付费用
+            if (user.getScore() <= orderTotalPrice.intValue()){
+                actualPrice = orderTotalPrice.subtract(new BigDecimal(user.getScore()));
+                user.setScore(0);
+                userService.updateById(user);
+            }else {
+                actualPrice = new BigDecimal(0);
+                user.setScore(user.getScore() - orderTotalPrice.intValue());
+                userService.updateById(user);
+            }
+            
+        }else {
+             actualPrice = orderTotalPrice;
+        }
 
         Integer orderId = null;
         LitemallOrder order = null;
@@ -382,7 +396,11 @@ public class WxOrderService {
         order.setGoodsPrice(checkedGoodsPrice);
         order.setFreightPrice(freightPrice);
         order.setCouponPrice(couponPrice);
-        order.setIntegralPrice(integralPrice);
+        if (scored) {
+            order.setIntegralPrice(new BigDecimal(user.getScore()));
+        }else {
+            order.setIntegralPrice(new BigDecimal(0));
+        }
         order.setOrderPrice(orderTotalPrice);
         order.setActualPrice(actualPrice);
 
@@ -478,7 +496,7 @@ public class WxOrderService {
 
             LitemallOrder o = new LitemallOrder();
             o.setId(orderId);
-            o.setOrderStatus(OrderUtil.STATUS_PAY);
+            o.setOrderStatus(OrderUtil.STATUS_SHIP);
             orderService.updateSelective(o);
 
             //  支付成功，有团购信息，更新团购信息
@@ -690,27 +708,41 @@ public class WxOrderService {
         if (!handleOption.isPay()) {
             return ResponseUtil.fail(ORDER_INVALID_OPERATION, "订单不能支付");
         }
+        order.setOrderStatus((short) 301);
+        LitemallOrder litemallOrder = new LitemallOrder();
+        litemallOrder.setId(orderId);
+        litemallOrder.setOrderStatus((short) 301);
+        LitemallUser user = userService.findById(userId);
+        user.setAmount(user.getAmount().subtract(order.getActualPrice()));
+        user.setScore(user.getScore()+(order.getActualPrice().intValue()));
+        userService.updateById(user);
+        orderService.updateSelective(litemallOrder);
+//        WxPayMwebOrderResult result = null;
+//        try {
+//            WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
+//            orderRequest.setOutTradeNo(order.getOrderSn());
+//            orderRequest.setTradeType("MWEB");
+//            orderRequest.setBody("订单：" + order.getOrderSn());
+//            // 元转成分
+//            int fee = 0;
+//            BigDecimal actualPrice = order.getActualPrice();
+//            fee = actualPrice.multiply(new BigDecimal(100)).intValue();
+//            orderRequest.setTotalFee(fee);
+//            orderRequest.setSpbillCreateIp(IpUtil.getIpAddr(request));
+//
+//            result = wxPayService.createOrder(orderRequest);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        WxPayMwebOrderResult result = null;
-        try {
-            WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
-            orderRequest.setOutTradeNo(order.getOrderSn());
-            orderRequest.setTradeType("MWEB");
-            orderRequest.setBody("订单：" + order.getOrderSn());
-            // 元转成分
-            int fee = 0;
-            BigDecimal actualPrice = order.getActualPrice();
-            fee = actualPrice.multiply(new BigDecimal(100)).intValue();
-            orderRequest.setTotalFee(fee);
-            orderRequest.setSpbillCreateIp(IpUtil.getIpAddr(request));
+//            result = wxPayService.createOrder(orderRequest);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-            result = wxPayService.createOrder(orderRequest);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return ResponseUtil.ok(result);
+        return ResponseUtil.ok("付款成功");
     }
 
     /**

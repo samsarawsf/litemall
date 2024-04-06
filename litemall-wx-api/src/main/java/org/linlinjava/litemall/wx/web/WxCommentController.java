@@ -5,10 +5,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.db.domain.LitemallComment;
-import org.linlinjava.litemall.db.service.LitemallCommentService;
-import org.linlinjava.litemall.db.service.LitemallGoodsService;
-import org.linlinjava.litemall.db.service.LitemallTopicService;
-import org.linlinjava.litemall.db.service.LitemallUserService;
+import org.linlinjava.litemall.db.domain.LitemallOrderGoods;
+import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
 import org.linlinjava.litemall.wx.dto.UserInfo;
 import org.linlinjava.litemall.wx.service.UserInfoService;
@@ -41,6 +39,8 @@ public class WxCommentController {
     private LitemallGoodsService goodsService;
     @Autowired
     private LitemallTopicService topicService;
+    @Autowired
+    private LitemallOrderGoodsService orderGoodsService;
 
     private Object validate(LitemallComment comment) {
         String content = comment.getContent();
@@ -62,7 +62,7 @@ public class WxCommentController {
             return ResponseUtil.badArgument();
         }
         if (type == 0) {
-            if (goodsService.findById(valueId) == null) {
+            if (orderGoodsService.queryByOid(valueId) == null) {
                 return ResponseUtil.badArgumentValue();
             }
         } else if (type == 1) {
@@ -95,9 +95,14 @@ public class WxCommentController {
         if (error != null) {
             return error;
         }
-
+        List<LitemallComment> litemallComments = new ArrayList<>();
         comment.setUserId(userId);
-        commentService.save(comment);
+        List<LitemallOrderGoods> litemallOrderGoods = orderGoodsService.queryByOid(comment.getValueId());
+        for (LitemallOrderGoods litemallOrderGoods1 : litemallOrderGoods){
+            comment.setValueId(litemallOrderGoods1.getGoodsId());
+            commentService.save(comment);
+        }
+        
         return ResponseUtil.ok(comment);
     }
 

@@ -225,6 +225,29 @@ const CommentList='/comment/list'; //评论列表
 const CommentCount='/comment/count'; //评论总数
 const CommentPost='/comment/post'; //发表评论
 
+export function CommentSave(data) {
+  return request({
+    url: CommentPost,
+    method: 'post',
+    data
+  })
+}
+
+export function commentList(query) {
+  return request({
+    url: CommentList,
+    method: 'get',
+    params: query
+  })
+}
+export function commentCount(query) {
+  return request({
+    url: CommentCount,
+    method: 'get',
+    params: query
+  })
+}
+
 const TopicList='/topic/list'; //专题列表
 export function topicList(query) {
   return request({
@@ -447,6 +470,14 @@ export function getList(api, query) {
     url: api,
     method: 'get',
     params: query
+  })
+}
+
+export function storageUpload(data) {
+  return request({
+    url: StorageUpload,
+    method: 'post',
+    data
   })
 }
 

@@ -16,7 +16,7 @@
         <div class="order_status_icon" @click="$router.push({path: '/user/order/list/2'})">
           <van-icon name="daifahuo" :info="order.unship > 0 ? order.unship : ''"/>
         </div>
-        <div>待发货</div>
+        <div>进行中</div>
       </van-col>
       <van-col span="6">
         <div class="order_status_icon" @click="$router.push({path: '/user/order/list/3'})">

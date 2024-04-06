@@ -162,7 +162,9 @@ export default {
         })
         .catch(() => {});
     },
-    commentOrder(id) {},
+    commentOrder(id) {
+      this.$router.push({ name: 'comments', params: { orderId: id } });
+    },
     toPay(id) {
       this.$router.push({ name: 'payment', params: { orderId: id } });
     },

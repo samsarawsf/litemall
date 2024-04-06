@@ -19,12 +19,6 @@
         <van-cell-group>
           <van-cell>
             <template slot="title">
-              <img src="../../../assets/images/ali_pay.png" alt="支付宝" width="82" height="29">
-            </template>
-            <van-radio name="ali"/>
-          </van-cell>
-          <van-cell>
-            <template slot="title">
               <img src="../../../assets/images/wx_pay.png" alt="微信支付" width="113" height="23">
             </template>            
             <van-radio name="wx"/>
@@ -69,10 +63,11 @@ export default {
       });
     },
     pay() {
-      
-      Dialog.alert({
-        message: '你选择了' + (this.payWay === 'wx' ? '微信支付' : '支付宝支付')
-      }).then(() => {
+      if (this.order.orderInfo.actualPrice  === 0){
+        this.$toast('付款成功');
+        this.$router.push({ path: '/user' })
+        return;
+      }
         if (this.payWay === 'wx') {
           let ua = navigator.userAgent.toLowerCase();
           let isWeixin = ua.indexOf('micromessenger') != -1;
@@ -123,17 +118,8 @@ export default {
           } else {
             orderH5pay({ orderId: this.orderId })
               .then(res => {
-                let data = res.data.data;
-                window.location.replace(
-                  data.mwebUrl +
-                  '&redirect_url=' +
-                  encodeURIComponent(
-                    window.location.origin +
-                    '/#/?orderId=' +
-                    this.orderId +
-                    '&tip=yes'
-                  )
-                );
+                this.$toast('付款成功');
+                this.$router.push({ path: '/user' })
               })
               .catch(err => {
                 Dialog.alert({ message: err.data.errmsg });
@@ -142,7 +128,7 @@ export default {
         } else {
           //todo : alipay
         }
-      });
+
     },
     onBridgeReady() {
       let that = this;

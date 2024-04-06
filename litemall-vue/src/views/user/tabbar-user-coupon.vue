@@ -1,29 +1,15 @@
 <template>
 	<div>
 		<van-cell-group>
-			<van-cell title="我的优惠券" isLink>
-				<router-link to="/user/coupon/list/0" class="text-desc">全部优惠券</router-link>
+			<van-cell title="我的积分" isLink>
 			</van-cell>
 		</van-cell-group>
 
 		<van-row class="coupon_status">
 			<van-col span="8">
-				<div class="coupon_status_icon" @click="$router.push({path: '/user/coupon/list/0'})">
-					<van-icon name="coupon" />
+				<div class="coupon_status_icon">
+					<van-icon name="coupon" :info="order.score > 0 ? order.score : ''" />
 				</div>
-				<div>待使用</div>
-			</van-col>
-			<van-col span="8">
-				<div class="coupon_status_icon" @click="$router.push({path: '/user/coupon/list/1'})">
-					<van-icon name="coupon-used" />
-				</div>
-				<div>已使用</div>
-			</van-col>
-			<van-col span="8">
-				<div class="coupon_status_icon" @click="$router.push({path: '/user/coupon/list/2'})">
-					<van-icon name="coupon-due" />
-				</div>
-				<div>过期关闭</div>
 			</van-col>
 		</van-row>
 
@@ -32,13 +18,29 @@
 
 <script>
 import { Row, Col } from 'vant';
+import {userIndex} from "@/api/api";
 
 export default {
   name: 'coupon-group',
   components: {
     [Row.name]: Row,
     [Col.name]: Col
-  }
+  },
+  data() {
+    return {
+      order: []
+    };
+  },
+  created() {
+    this.init();
+  },
+  methods: {
+    init() {
+      userIndex().then(res => {
+        this.order = res.data.data.order;
+      });
+    }
+  },
 };
 </script>
 

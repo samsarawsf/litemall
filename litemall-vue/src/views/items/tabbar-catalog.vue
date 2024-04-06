@@ -15,9 +15,9 @@
       >{{item.name}}</li>
     </ul>
     <div class="class_tree_content">
-      <div class="class_tree_all">
-        <img style="width:250px" v-lazy="currentCategory.picUrl">
-      </div>
+<!--      <div class="class_tree_all">-->
+<!--        <img style="width:250px" v-lazy="currentCategory.picUrl">-->
+<!--      </div>-->
       <div class="box">
         <span>{{currentCategory.desc}}</span>
       </div>
@@ -97,6 +97,7 @@ export default {
 
 .tal_class_searchBox {
   position: relative;
+  color: #9370DB;
 }
 
 .tal_class_searchMask {

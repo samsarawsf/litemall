@@ -3,9 +3,11 @@ package org.linlinjava.litemall.db.service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.linlinjava.litemall.db.dao.LitemallOrderMapper;
+import org.linlinjava.litemall.db.dao.LitemallUserMapper;
 import org.linlinjava.litemall.db.dao.OrderMapper;
 import org.linlinjava.litemall.db.domain.LitemallOrder;
 import org.linlinjava.litemall.db.domain.LitemallOrderExample;
+import org.linlinjava.litemall.db.domain.LitemallUser;
 import org.linlinjava.litemall.db.domain.OrderVo;
 import org.linlinjava.litemall.db.util.OrderUtil;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ public class LitemallOrderService {
     private LitemallOrderMapper litemallOrderMapper;
     @Resource
     private OrderMapper orderMapper;
+    
+    @Resource
+    private LitemallUserMapper userMapper;
 
     public int add(LitemallOrder order) {
         order.setAddTime(LocalDateTime.now());
@@ -183,12 +188,13 @@ public class LitemallOrderService {
                 // do nothing
             }
         }
-
+        LitemallUser litemallUser = userMapper.selectByPrimaryKey(userId);
         Map<Object, Object> orderInfo = new HashMap<Object, Object>();
         orderInfo.put("unpaid", unpaid);
         orderInfo.put("unship", unship);
         orderInfo.put("unrecv", unrecv);
         orderInfo.put("uncomment", uncomment);
+        orderInfo.put("score",litemallUser.getScore());
         return orderInfo;
 
     }
