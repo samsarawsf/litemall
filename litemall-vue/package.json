@@ -1,7 +1,7 @@
 {
-  "name": "litemall-vue",
+  "name": "sxy-shopping-app",
   "version": "0.1.0",
-  "description": "litemall-vue basing on vant--mobile-mall 0.1.0",
+  "description": "sxy-shopping-app basing on vant--mobile-mall 0.1.0",
   "author": "litemall <linlinjava@163.com>",
   "license": "MIT",
   "private": true,
