@@ -23,9 +23,6 @@
         <module>litemall-core</module>
         <module>litemall-db</module>
         <module>litemall-wx-api</module>
-        <module>litemall-admin-api</module>
-        <module>litemall-all</module>
-        <module>litemall-all-war</module>
     </modules>
 
     <dependencyManagement>
@@ -43,16 +40,6 @@
             <dependency>
                 <groupId>org.linlinjava</groupId>
                 <artifactId>litemall-wx-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.linlinjava</groupId>
-                <artifactId>litemall-admin-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.linlinjava</groupId>
-                <artifactId>litemall-all</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -148,7 +135,7 @@
 			   <artifactId>springfox-swagger2</artifactId>
 			   <version>2.9.2</version>
 		   </dependency>
-		
+
 		<dependency>
 			  <groupId>io.springfox</groupId>
 			  <artifactId>springfox-swagger-ui</artifactId>
